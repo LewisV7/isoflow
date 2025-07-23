@@ -3,7 +3,7 @@ import type { Model } from './model';
 import type { RendererProps } from './rendererProps';
 
 export type InitialData = Model & {
-  fitToView?: boolean;
+  fitToView?: boolean; // 是否展示全部
   view?: string;
 };
 

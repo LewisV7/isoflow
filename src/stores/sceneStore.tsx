@@ -3,9 +3,12 @@ import { createStore, useStore } from 'zustand';
 import { SceneStore } from 'src/types';
 
 const initialState = () => {
+  // 屏幕层
   return createStore<SceneStore>((set, get) => {
     return {
+      // 连接线
       connectors: {},
+      // 文字盒
       textBoxes: {},
       actions: {
         get,

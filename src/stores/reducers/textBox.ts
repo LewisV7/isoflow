@@ -3,14 +3,17 @@ import { TextBox } from 'src/types';
 import { getItemByIdOrThrow, getTextBoxDimensions } from 'src/utils';
 import { State, ViewReducerContext } from './types';
 
+// 同步textBox
 export const syncTextBox = (
   id: string,
   { viewId, state }: ViewReducerContext
 ): State => {
   const newState = produce(state, (draft) => {
+    // 获取view
     const view = getItemByIdOrThrow(draft.model.views, viewId);
+    // 获取textBox
     const textBox = getItemByIdOrThrow(view.value.textBoxes ?? [], id);
-
+    // 获取文本宽度
     const textBoxSize = getTextBoxDimensions(textBox.value);
 
     draft.scene.textBoxes[textBox.value.id] = { size: textBoxSize };

@@ -6,14 +6,15 @@ import { Model } from 'src/types';
 import { INITIAL_SCENE_STATE } from 'src/config';
 
 export const useView = () => {
+  // 返回ui操作
   const uiStateActions = useUiStateStore((state) => {
     return state.actions;
   });
-
+  // 返回屏幕操作
   const sceneActions = useSceneStore((state) => {
     return state.actions;
   });
-
+  // 改变view
   const changeView = useCallback(
     (viewId: string, model: Model) => {
       const newState = reducers.view({

@@ -28,6 +28,7 @@ const App = ({
   });
   const initialDataManager = useInitialDataManager();
   const model = useModelStore((state) => {
+    // 返回模型
     return modelFromModelStore(state);
   });
 
@@ -74,14 +75,15 @@ const App = ({
       >
         <Renderer {...renderer} />
         <UiOverlay />
-      </Box>
+      </Box> 
     </>
   );
 };
 
 export const Isoflow = (props: IsoflowProps) => {
   return (
-    <ThemeProvider theme={theme}>
+    // 主题
+    <ThemeProvider theme={theme}> 
       <ModelProvider>
         <SceneProvider>
           <UiStateProvider>

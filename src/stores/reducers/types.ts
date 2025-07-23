@@ -12,8 +12,8 @@ export interface State {
 }
 
 export interface ViewReducerContext {
-  viewId: string;
-  state: State;
+  viewId: string; // 视图ID
+  state: State; // 视图状态
 }
 
 type ViewReducerAction =

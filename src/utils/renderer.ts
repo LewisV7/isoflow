@@ -81,7 +81,7 @@ interface GetTilePosition {
   tile: Coords;
   origin?: TileOrigin;
 }
-
+// 获取项的位置
 export const getTilePosition = ({
   tile,
   origin = 'CENTER'
@@ -122,8 +122,11 @@ export const isoToScreen = ({ tile, origin, rendererSize }: IsoToScreen) => {
   };
 };
 
+// 根据位置进行排序
 export const sortByPosition = (tiles: Coords[]) => {
+  // x轴排序
   const xSorted = [...tiles];
+  // y轴排序
   const ySorted = [...tiles];
   xSorted.sort((a, b) => {
     return a.x - b.x;
@@ -133,16 +136,19 @@ export const sortByPosition = (tiles: Coords[]) => {
   });
 
   const highest = {
+    // 获取x轴最大的那个
     byX: xSorted[xSorted.length - 1],
+    // 获取y轴最大的那个
     byY: ySorted[ySorted.length - 1]
   };
+  // 获取最小的x轴和y轴坐标
   const lowest = { byX: xSorted[0], byY: ySorted[0] };
-
+  // 分开获取最小，最大 x,y
   const lowX = lowest.byX.x;
   const highX = highest.byX.x;
   const lowY = lowest.byY.y;
   const highY = highest.byY.y;
-
+  // 返回全部的x，y
   return {
     byX: xSorted,
     byY: ySorted,
@@ -178,12 +184,13 @@ export const isWithinBounds = (tile: Coords, bounds: Coords[]) => {
 
 // Returns the four corners of a grid that encapsulates all tiles
 // passed in (at least 1 tile needed)
+// 根据一些x和y的元素数组 和偏移(默认为0)
 export const getBoundingBox = (
   tiles: Coords[],
   offset: Coords = CoordsUtils.zero()
 ): BoundingBox => {
   const { lowX, lowY, highX, highY } = sortByPosition(tiles);
-
+  // 根据偏移量来获取全部的
   return [
     { x: lowX - offset.x, y: lowY - offset.y },
     { x: highX + offset.x, y: lowY - offset.y },
@@ -192,10 +199,12 @@ export const getBoundingBox = (
   ];
 };
 
+// 获取边缘大小
 export const getBoundingBoxSize = (boundingBox: Coords[]): Size => {
   const { lowX, lowY, highX, highY } = sortByPosition(boundingBox);
 
   return {
+    // 宽度和高度
     width: highX - lowX + 1,
     height: highY - lowY + 1
   };
@@ -304,26 +313,27 @@ export const getMouse = ({
 
   return nextMouse;
 };
-
+// 根据连接器返回全部的锚点
 export const getAllAnchors = (connectors: Connector[]) => {
   return connectors.reduce((acc, connector) => {
     return [...acc, ...connector.anchors];
   }, [] as ConnectorAnchor[]);
 };
-
+// 获取锚点的坐标
 export const getAnchorTile = (anchor: ConnectorAnchor, view: View): Coords => {
   if (anchor.ref.item) {
+    //根据views和索引的项拿出来位置
     const viewItem = getItemByIdOrThrow(view.items, anchor.ref.item).value;
     return viewItem.tile;
   }
-
+  // 根据views和被索引项拿出位置
   if (anchor.ref.anchor) {
     const allAnchors = getAllAnchors(view.connectors ?? []);
     const nextAnchor = getItemByIdOrThrow(allAnchors, anchor.ref.anchor).value;
-
+    // 递归循环拿取
     return getAnchorTile(nextAnchor, view);
   }
-
+  // 存在的位置拿出来进行返回
   if (anchor.ref.tile) {
     return anchor.ref.tile;
   }
@@ -336,6 +346,7 @@ interface NormalisePositionFromOrigin {
   origin: Coords;
 }
 
+// 位置和原始点 返回原始点减去位置的x和y
 export const normalisePositionFromOrigin = ({
   position,
   origin
@@ -348,6 +359,7 @@ interface GetConnectorPath {
   view: View;
 }
 
+// 获取连接器的路径
 export const getConnectorPath = ({
   anchors,
   view
@@ -355,24 +367,27 @@ export const getConnectorPath = ({
   tiles: Coords[];
   rectangle: Rect;
 } => {
+  // 锚点大于2 报错
   if (anchors.length < 2)
     throw new Error(
       `Connector needs at least two anchors (receieved: ${anchors.length})`
     );
-
+  // 获取锚点的位置
   const anchorPosition = anchors.map((anchor) => {
     return getAnchorTile(anchor, view);
   });
-
+  // 搜索区域
   const searchArea = getBoundingBox(anchorPosition, CONNECTOR_SEARCH_OFFSET);
-
+  // 获取排序后的位置
   const sorted = sortByPosition(searchArea);
+  // 获取这个区域的大小
   const searchAreaSize = getBoundingBoxSize(searchArea);
+  // 方形 x轴和y轴
   const rectangle = {
     from: { x: sorted.highX, y: sorted.highY },
     to: { x: sorted.lowX, y: sorted.lowY }
   };
-
+  // 根据锚点位置的数组
   const positionsNormalisedFromSearchArea = anchorPosition.map((position) => {
     return normalisePositionFromOrigin({
       position,
@@ -385,6 +400,7 @@ export const getConnectorPath = ({
       if (i === 0) return acc;
 
       const prev = positionsNormalisedFromSearchArea[i - 1];
+      // 返回path
       const path = findPath({
         from: prev,
         to: position,
@@ -395,7 +411,7 @@ export const getConnectorPath = ({
     },
     []
   );
-
+  // 返回x点和y点 和高点和地点
   return { tiles, rectangle };
 };
 
@@ -426,7 +442,7 @@ export const connectorPathTileToGlobal = (
     CoordsUtils.subtract(tile, CONNECTOR_SEARCH_OFFSET)
   );
 };
-
+// 返回textBox end坐标 判断是x轴还是y轴
 export const getTextBoxEndTile = (textBox: TextBox, size: Size) => {
   if (textBox.orientation === ProjectionOrientationEnum.X) {
     return CoordsUtils.add(textBox.tile, {
@@ -446,21 +462,23 @@ interface GetItemAtTile {
   scene: ReturnType<typeof useScene>;
 }
 
+// 根据x和y以及屏幕对象来获取项目
 export const getItemAtTile = ({
   tile,
   scene
 }: GetItemAtTile): ItemReference | null => {
+  // 屏幕中的items来判断x,y是否和传过来的x,y相同
   const viewItem = scene.items.find((item) => {
     return CoordsUtils.isEqual(item.tile, tile);
   });
-
+  // 如果存在 返回像项目，并返回id
   if (viewItem) {
     return {
       type: 'ITEM',
       id: viewItem.id
     };
   }
-
+  // 如果不存在 寻找textBox
   const textBox = scene.textBoxes.find((tb) => {
     const textBoxTo = getTextBoxEndTile(tb, tb.size);
     const textBoxBounds = getBoundingBox([
@@ -522,34 +540,38 @@ interface FontProps {
   fontFamily: string;
 }
 
+// 根据文本和文本样式返回文本宽度
 export const getTextWidth = (text: string, fontProps: FontProps) => {
   if (!text) return 0;
-
+  // 获取内边距
   const paddingX = TEXTBOX_PADDING * UNPROJECTED_TILE_SIZE;
+  // 转换px
   const fontSizePx = toPx(fontProps.fontSize * UNPROJECTED_TILE_SIZE);
+  // 生成画布
   const canvas: HTMLCanvasElement = document.createElement('canvas');
   const context = canvas.getContext('2d');
 
   if (!context) {
     throw new Error('Could not get canvas context');
   }
-
+  //
   context.font = `${fontProps.fontWeight} ${fontSizePx} ${fontProps.fontFamily}`;
   const metrics = context.measureText(text);
 
   canvas.remove();
-
+  // 返回文本宽度
   return (metrics.width + paddingX * 2) / UNPROJECTED_TILE_SIZE - 0.8;
 };
-
+// 根据textBox获取size
 export const getTextBoxDimensions = (textBox: TextBox): Size => {
+  // 获取宽度
   const width = getTextWidth(textBox.content, {
     fontSize: textBox.fontSize ?? TEXTBOX_DEFAULTS.fontSize,
     fontFamily: DEFAULT_FONT_FAMILY,
     fontWeight: TEXTBOX_FONT_WEIGHT
   });
   const height = 1;
-
+  // 返回文本宽高
   return { width, height };
 };
 
@@ -573,6 +595,7 @@ export const convertBoundsToNamedAnchors = (
   };
 };
 
+// 根据x,y和锚点 获取引用的tile
 export const getAnchorAtTile = (tile: Coords, anchors: ConnectorAnchor[]) => {
   return anchors.find((anchor) => {
     return Boolean(
@@ -581,6 +604,7 @@ export const getAnchorAtTile = (tile: Coords, anchors: ConnectorAnchor[]) => {
   });
 };
 
+// 根据锚点ID和连接器数组 返回全部的连接器
 export const getAnchorParent = (anchorId: string, connectors: Connector[]) => {
   const connector = connectors.find((con) => {
     return con.anchors.find((anchor) => {
@@ -595,6 +619,7 @@ export const getAnchorParent = (anchorId: string, connectors: Connector[]) => {
   return connector;
 };
 
+// 获取滚动的位置
 export const getTileScrollPosition = (
   tile: Coords,
   origin?: TileOrigin
@@ -663,27 +688,32 @@ export const getConnectorDirectionIcon = (connectorTiles: Coords[]) => {
   };
 };
 
+// 获取项目的大小
 export const getProjectBounds = (
   view: View,
   padding = PROJECT_BOUNDING_BOX_PADDING
 ): Coords[] => {
+  // 返回视图的item的x,y
   const itemTiles = view.items.map((item) => {
     return item.tile;
   });
-
+  // 全部的连接器
   const connectors = view.connectors ?? [];
+  // 连接器的x,y
   const connectorTiles = connectors.reduce<Coords[]>((acc, connector) => {
     const path = getConnectorPath({ anchors: connector.anchors, view });
 
     return [...acc, path.rectangle.from, path.rectangle.to];
   }, []);
-
+  // 全部区域
   const rectangles = view.rectangles ?? [];
+  // 返回区域的x,y
   const rectangleTiles = rectangles.reduce<Coords[]>((acc, rectangle) => {
     return [...acc, rectangle.from, rectangle.to];
   }, []);
-
+  // 全部textBox
   const textBoxes = view.textBoxes ?? [];
+  // 返回全部的textBox
   const textBoxTiles = textBoxes.reduce<Coords[]>((acc, textBox) => {
     const size = getTextBoxDimensions(textBox);
 
@@ -703,12 +733,12 @@ export const getProjectBounds = (
     ...rectangleTiles,
     ...textBoxTiles
   ];
-
+  // 如果全部为0 则赋一个0为中心
   if (allTiles.length === 0) {
     const centerTile = CoordsUtils.zero();
     allTiles = [centerTile, centerTile, centerTile, centerTile];
   }
-
+  // 根据偏移来返回size
   const corners = getBoundingBox(allTiles, {
     x: padding,
     y: padding
@@ -737,11 +767,13 @@ export const getUnprojectedBounds = (view: View) => {
   };
 };
 
+// 根据view和视图大小 返回放大倍数和滑动区域
 export const getFitToViewParams = (view: View, viewportSize: Size) => {
   const projectBounds = getProjectBounds(view);
   const sortedCornerPositions = sortByPosition(projectBounds);
   const boundingBoxSize = getBoundingBoxSize(projectBounds);
   const unprojectedBounds = getUnprojectedBounds(view);
+  // 获取放大倍数
   const zoom = clamp(
     Math.min(
       viewportSize.width / unprojectedBounds.width,
@@ -750,10 +782,12 @@ export const getFitToViewParams = (view: View, viewportSize: Size) => {
     0,
     MAX_ZOOM
   );
+  // 获取滚动的目标位置
   const scrollTarget: Coords = {
     x: (sortedCornerPositions.lowX + boundingBoxSize.width / 2) * zoom,
     y: (sortedCornerPositions.lowY + boundingBoxSize.height / 2) * zoom
   };
+  // 返回scrll的坐标
   const scroll = getTileScrollPosition(scrollTarget);
 
   return {

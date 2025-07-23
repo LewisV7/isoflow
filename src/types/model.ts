@@ -33,6 +33,7 @@ export type Connector = z.infer<typeof connectorSchema>;
 export type TextBox = z.infer<typeof textBoxSchema>;
 export type Rectangle = z.infer<typeof rectangleSchema>;
 
+// 模型存储
 export type ModelStore = Model & {
   actions: {
     get: StoreApi<ModelStore>['getState'];

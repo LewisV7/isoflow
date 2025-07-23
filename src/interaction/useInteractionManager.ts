@@ -14,6 +14,7 @@ import { Pan } from './modes/Pan';
 import { PlaceIcon } from './modes/PlaceIcon';
 import { TextBox } from './modes/TextBox';
 
+// 模式
 const modes: { [k in string]: ModeActions } = {
   CURSOR: Cursor,
   DRAG_ITEMS: DragItems,
@@ -26,6 +27,7 @@ const modes: { [k in string]: ModeActions } = {
   TEXTBOX: TextBox
 };
 
+// 根据事件的类型返回函数
 const getModeFunction = (mode: ModeActions, e: SlimMouseEvent) => {
   switch (e.type) {
     case 'mousemove':
@@ -38,7 +40,7 @@ const getModeFunction = (mode: ModeActions, e: SlimMouseEvent) => {
       return null;
   }
 };
-
+// 交互管理器
 export const useInteractionManager = () => {
   const rendererRef = useRef<HTMLElement>();
   const reducerTypeRef = useRef<string>();
@@ -49,8 +51,9 @@ export const useInteractionManager = () => {
     return state;
   });
   const scene = useScene();
+  // 监听元素大小
   const { size: rendererSize } = useResizeObserver(uiState.rendererEl);
-
+  // 鼠标事件
   const onMouseEvent = useCallback(
     (e: SlimMouseEvent) => {
       if (!rendererRef.current) return;

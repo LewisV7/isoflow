@@ -18,7 +18,7 @@ export const ItemReferenceTypeOptions = {
   TEXTBOX: 'TEXTBOX',
   RECTANGLE: 'RECTANGLE'
 } as const;
-
+// 返回项目类型
 export type ItemReferenceType = keyof typeof ItemReferenceTypeOptions;
 
 export type ItemReference = {
@@ -40,9 +40,11 @@ export interface SceneTextBox {
 }
 
 export interface Scene {
+  // 连接层
   connectors: {
     [key: string]: SceneConnector;
   };
+  // 文字层
   textBoxes: {
     [key: string]: SceneTextBox;
   };

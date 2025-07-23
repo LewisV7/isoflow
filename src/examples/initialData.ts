@@ -7,6 +7,7 @@ import gcpIsopack from '@isoflow/isopacks/dist/gcp';
 import azureIsopack from '@isoflow/isopacks/dist/azure';
 import kubernetesIsopack from '@isoflow/isopacks/dist/kubernetes';
 
+// icon包
 const isopacks = flattenCollections([
   isoflowIsopack,
   awsIsopack,
@@ -15,6 +16,7 @@ const isopacks = flattenCollections([
   kubernetesIsopack
 ]);
 
+// 颜色数组
 export const colors: Colors = [
   {
     id: 'color1',
@@ -49,9 +51,9 @@ export const colors: Colors = [
 export const icons: Icons = isopacks;
 
 export const initialData: InitialData = {
-  title: 'Airport management software system',
-  icons,
-  colors,
+  title: 'Airport management software system', // 标题
+  icons, // 图标
+  colors, // 颜色
   items: [
     {
       id: 'item1',

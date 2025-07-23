@@ -19,6 +19,7 @@ import {
 } from 'src/utils';
 import { useScene } from 'src/hooks/useScene';
 
+//
 const getAnchorOrdering = (
   anchor: ConnectorAnchor,
   connector: SceneConnector,
@@ -41,13 +42,15 @@ const getAnchorOrdering = (
 
   return index;
 };
-
+// 获取锚点 根据连接器id 和x,y 和屏幕对象
 const getAnchor = (
   connectorId: string,
   tile: Coords,
   scene: ReturnType<typeof useScene>
 ) => {
+  // 获取连接器
   const connector = getItemByIdOrThrow(scene.connectors, connectorId).value;
+  // 获取anchor
   const anchor = getAnchorAtTile(tile, connector.anchors);
 
   if (!anchor) {
@@ -73,28 +76,30 @@ const getAnchor = (
 
   return anchor;
 };
-
+//
 const mousedown: ModeActionsAction = ({
   uiState,
   scene,
   isRendererInteraction
 }) => {
+  // 如果不能交互就直接return
   if (uiState.mode.type !== 'CURSOR' || !isRendererInteraction) return;
 
   const itemAtTile = getItemAtTile({
     tile: uiState.mouse.position.tile,
     scene
   });
-
+  // 设置模式
   if (itemAtTile) {
     uiState.actions.setMode(
       produce(uiState.mode, (draft) => {
         draft.mousedownItem = itemAtTile;
       })
     );
-
+    // 设置控制的item
     uiState.actions.setItemControls(itemAtTile);
   } else {
+    // 否则清除mousedown
     uiState.actions.setMode(
       produce(uiState.mode, (draft) => {
         draft.mousedownItem = null;
@@ -105,12 +110,14 @@ const mousedown: ModeActionsAction = ({
   }
 };
 
+// 鼠标
 export const Cursor: ModeActions = {
+  // 进入
   entry: (state) => {
     const { uiState } = state;
-
+    // 如果存储中的type不是CURSOR 直接return
     if (uiState.mode.type !== 'CURSOR') return;
-
+    // 监听mousedown
     if (uiState.mode.mousedownItem) {
       mousedown(state);
     }
@@ -119,7 +126,7 @@ export const Cursor: ModeActions = {
     if (uiState.mode.type !== 'CURSOR' || !hasMovedTile(uiState.mouse)) return;
 
     let item = uiState.mode.mousedownItem;
-
+    // 如果项目类型为连接器并且存在mousedown
     if (item?.type === 'CONNECTOR' && uiState.mouse.mousedown) {
       const anchor = getAnchor(item.id, uiState.mouse.mousedown.tile, scene);
 
@@ -141,29 +148,34 @@ export const Cursor: ModeActions = {
   mousedown,
   mouseup: ({ uiState, isRendererInteraction }) => {
     if (uiState.mode.type !== 'CURSOR' || !isRendererInteraction) return;
-
+    // mousedownItem 存在
     if (uiState.mode.mousedownItem) {
+      // 如果type为ITEM 设置控制项类型 和 控制ID
       if (uiState.mode.mousedownItem.type === 'ITEM') {
         uiState.actions.setItemControls({
           type: 'ITEM',
           id: uiState.mode.mousedownItem.id
         });
+        // 如果是区域 返回区域类型
       } else if (uiState.mode.mousedownItem.type === 'RECTANGLE') {
         uiState.actions.setItemControls({
           type: 'RECTANGLE',
           id: uiState.mode.mousedownItem.id
         });
+        // 连接器
       } else if (uiState.mode.mousedownItem.type === 'CONNECTOR') {
         uiState.actions.setItemControls({
           type: 'CONNECTOR',
           id: uiState.mode.mousedownItem.id
         });
+        // 文字框
       } else if (uiState.mode.mousedownItem.type === 'TEXTBOX') {
         uiState.actions.setItemControls({
           type: 'TEXTBOX',
           id: uiState.mode.mousedownItem.id
         });
       }
+      // 都不是则返回null
     } else {
       uiState.actions.setItemControls(null);
     }

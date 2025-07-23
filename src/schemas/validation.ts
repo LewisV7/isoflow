@@ -77,6 +77,7 @@ type Issue = IssueType & {
   message: string;
 };
 
+// 验证连接器锚点
 export const validateConnectorAnchor = (
   anchor: ConnectorAnchor,
   ctx: {
@@ -86,7 +87,7 @@ export const validateConnectorAnchor = (
   }
 ): Issue[] => {
   const issues: Issue[] = [];
-
+  // 如果锚点的结果不等于1 抛出错误
   if (Object.keys(anchor.ref).length !== 1) {
     issues.push({
       type: 'INVALID_ANCHOR_REF',
@@ -99,11 +100,13 @@ export const validateConnectorAnchor = (
         'Connector includes an anchor that references more than one item.  An anchor can only reference one item.'
     });
   }
-
+  // 如果这个锚点存在连接项
   if (anchor.ref.item) {
     try {
+      // 根据视图项和项目ID获取视图项目
       getItemByIdOrThrow(ctx.view.items, anchor.ref.item);
     } catch (e) {
+      // 否则报错
       issues.push({
         type: 'INVALID_ANCHOR_TO_VIEW_ITEM_REF',
         params: {
@@ -117,14 +120,15 @@ export const validateConnectorAnchor = (
       });
     }
   }
-
+  // 锚点的引用的锚点存在
   if (anchor.ref.anchor) {
+    // 返回全部的目标锚点并且包含着这个锚点
     const targetAnchorId = ctx.allAnchors
       .map(({ id }) => {
         return id;
       })
       .includes(anchor.ref.anchor);
-
+    // targetAnchorId不存在，报错
     if (!targetAnchorId) {
       issues.push({
         type: 'INVALID_ANCHOR_TO_ANCHOR_REF',
@@ -143,6 +147,8 @@ export const validateConnectorAnchor = (
   return issues;
 };
 
+// 验证连接器
+// 连接器和ctx上下文 视图+模型+锚点
 export const validateConnector = (
   connector: Connector,
   ctx: {
@@ -151,13 +157,17 @@ export const validateConnector = (
     allAnchors: ConnectorAnchor[];
   }
 ): Issue[] => {
+  // 问题数组
   const issues: Issue[] = [];
-
+  // 查看连接器的颜色
   if (connector.color) {
     try {
+      // 根据模型的全部颜色和连接器的id,返回连接器
       getItemByIdOrThrow(ctx.model.colors, connector.color);
     } catch (e) {
+      // 报错 不存在这个颜色ID
       issues.push({
+        // 索引不到连接器颜色
         type: 'INVALID_CONNECTOR_COLOR_REF',
         params: {
           connector: connector.id,
@@ -169,7 +179,7 @@ export const validateConnector = (
       });
     }
   }
-
+  // 判断连接器的锚点是否小于2 如果小于2抛出错误
   if (connector.anchors.length < 2) {
     issues.push({
       type: 'CONNECTOR_TOO_FEW_ANCHORS',
@@ -181,7 +191,7 @@ export const validateConnector = (
         'Connector must have at least two anchors.  One for the source and one for the target.'
     });
   }
-
+  // 得到锚点
   const { anchors } = connector;
 
   anchors.forEach((anchor) => {

@@ -75,21 +75,33 @@ export const MAX_ZOOM = 1;
 export const TRANSFORM_ANCHOR_SIZE = 30;
 export const TRANSFORM_CONTROLS_COLOR = '#0392ff';
 export const INITIAL_DATA: InitialData = {
+  // 标题
   title: 'Untitled',
+  // 版本
   version: '',
+  // 图标
   icons: [],
+  // 默认颜色
   colors: [DEFAULT_COLOR],
+  // 项
   items: [],
+  // 视图
   views: [],
+  // 是否显示到整个屏幕
   fitToView: false
 };
 export const INITIAL_UI_STATE = {
+  // 默认放大为1倍
   zoom: 1,
+  // 滑动为0
   scroll: {
+    // 位置为x:0,y:0
     position: CoordsUtils.zero(),
+    // 偏移:x:0,y:0
     offset: CoordsUtils.zero()
   }
 };
+// 连接器 和 文字框
 export const INITIAL_SCENE_STATE = {
   connectors: {},
   textBoxes: {}

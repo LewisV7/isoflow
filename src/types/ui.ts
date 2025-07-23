@@ -104,6 +104,7 @@ export interface Scroll {
   offset: Coords;
 }
 
+// 图标是否可扩展
 export interface IconCollectionState {
   id?: string;
   isExpanded: boolean;
