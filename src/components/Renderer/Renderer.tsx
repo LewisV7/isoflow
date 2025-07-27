@@ -29,7 +29,6 @@ export const Renderer = ({ showGrid, backgroundColor }: RendererProps) => {
   });
   const { setInteractionsElement } = useInteractionManager();
   const { items, rectangles, connectors, textBoxes } = useScene();
-
   useEffect(() => {
     if (!containerRef.current || !interactionsRef.current) return;
 

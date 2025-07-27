@@ -32,11 +32,9 @@ export const useScene = () => {
   const currentViewId = useUiStateStore((state) => {
     return state.view;
   });
-
   const currentView = useMemo(() => {
     return getItemByIdOrThrow(model.views, currentViewId).value;
   }, [currentViewId, model.views]);
-
   const items = useMemo(() => {
     return currentView.items ?? [];
   }, [currentView.items]);

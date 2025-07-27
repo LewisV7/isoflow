@@ -35,9 +35,9 @@ export const IsoTileArea = ({
       strokeWidth: stroke.width
     };
   }, [stroke]);
-
   return (
-    <Svg viewboxSize={pxSize} style={css}>
+    <>
+     <Svg viewboxSize={pxSize} style={css}>
       <rect
         width={pxSize.width}
         height={pxSize.height}
@@ -45,6 +45,9 @@ export const IsoTileArea = ({
         rx={cornerRadius}
         {...strokeParams}
       />
-    </Svg>
+    </Svg></>
+   
+
+    
   );
 };

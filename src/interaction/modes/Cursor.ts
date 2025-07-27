@@ -89,6 +89,8 @@ const mousedown: ModeActionsAction = ({
     tile: uiState.mouse.position.tile,
     scene
   });
+  console.log(uiState.mouse.position.tile);
+
   // 设置模式
   if (itemAtTile) {
     uiState.actions.setMode(
