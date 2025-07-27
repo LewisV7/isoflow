@@ -62,16 +62,6 @@ export const screenToIso = ({
     x: -rendererSize.width * 0.5 + mouse.x - scroll.position.x,
     y: -rendererSize.height * 0.5 + mouse.y - scroll.position.y
   };
-  console.log(
-    projectedTileSize,
-    halfW,
-    halfH,
-    projectPosition,
-    'hover',
-    rendererSize.width,
-    mouse.x,
-    scroll.position.x
-  );
 
   const tile = {
     x: Math.floor(
@@ -83,6 +73,7 @@ export const screenToIso = ({
         projectPosition.x / projectedTileSize.width
     )
   };
+
   return tile;
 };
 
@@ -97,6 +88,7 @@ export const getTilePosition = ({
 }: GetTilePosition) => {
   const halfW = PROJECTED_TILE_SIZE.width / 2;
   const halfH = PROJECTED_TILE_SIZE.height / 2;
+
   const position: Coords = {
     x: halfW * tile.x - halfW * tile.y,
     y: -(halfH * tile.x + halfH * tile.y)
@@ -281,6 +273,7 @@ export const getMouse = ({
   };
 
   const { clientX, clientY } = mouseEvent;
+
   const mousePosition = {
     x: clientX - offset.x,
     y: clientY - offset.y
@@ -288,7 +281,6 @@ export const getMouse = ({
 
   const newPosition: Mouse['position'] = {
     screen: mousePosition,
-
     tile: screenToIso({
       mouse: mousePosition,
       zoom,

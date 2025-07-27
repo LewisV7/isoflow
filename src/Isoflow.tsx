@@ -51,6 +51,7 @@ const App = ({
 
   useEffect(() => {
     if (!initialDataManager.isReady || !onModelUpdated) return;
+
     onModelUpdated(model);
   }, [model, initialDataManager.isReady, onModelUpdated]);
 

@@ -62,6 +62,7 @@ export const useInteractionManager = () => {
       const modeFunction = getModeFunction(mode, e);
 
       if (!modeFunction) return;
+
       const nextMouse = getMouse({
         interactiveElement: rendererRef.current,
         zoom: uiState.zoom,
